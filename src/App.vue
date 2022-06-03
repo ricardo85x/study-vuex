@@ -1,14 +1,14 @@
 <template>
-  <div class="m-5 flex flex-col gap-2">
+  <div class="flex flex-col gap-2 m-5">
     <div class="flex gap-2">
       <div
         v-for="product in products"
         :key="product.id"
-        class="flex flex-col gap-1 content-between w-64 border border-gray-200"
+        class="flex flex-col content-between w-64 gap-1 border border-gray-200"
       >
-        <div class="bg-gray-700 h-64"></div>
+        <div class="h-64 bg-gray-700"></div>
         <div class="p-4">{{ product.title }}</div>
-        <div class="p-4 flex flex-row justify-between items-center">
+        <div class="flex flex-row items-center justify-between p-4">
           <button
             class="p-2 border border-2 rounded-md hover:bg-gray-100"
             @click="addToCart(product)"
@@ -20,13 +20,13 @@
       </div>
     </div>
 
-    <div class="text-3xl font-bold">
-      Name: {{ $store.state.user.first_name }} {{ $store.state.user.last_name }}
-    </div>
+    <hr class="my-10" />
+
+    <div class="text-3xl font-bold">Name: {{ fullName }}</div>
     <div class="flex flex-row gap-2">
       <label for="">First Name</label>
       <input
-        class="border border-gray-500 rounded pl-2"
+        class="pl-2 border border-gray-500 rounded"
         type="text"
         v-model="firstName"
         placeholder="First Name"
@@ -35,22 +35,24 @@
     <div class="flex flex-row gap-2">
       <label for="">Last Name</label>
       <input
-        class="border border-gray-500 rounded pl-2"
+        class="pl-2 border border-gray-500 rounded"
         type="text"
         v-model="lastName"
         placeholder="Last Name"
       />
     </div>
     <button
-      class="bg-gray-200 hover:bg-gray-100 p-3 rounded-md"
+      class="w-48 p-3 bg-gray-200 rounded-md hover:bg-gray-100"
       @click="updateName"
     >
-      Save
+      Reset First Name
     </button>
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+
 export default {
   name: "App",
   data() {
@@ -65,39 +67,47 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["ADD_PRODUCT", "SAVE_FIRST_NAME", "SAVE_LAST_NAME"]),
+    ...mapActions(["saveFirstName"]),
     updateName() {
       console.log("updating name");
 
       // action
-      // this.$store.dispatch("saveFirstName", this.myName);
+      this.saveFirstName("Ricks");
 
       // mutation
       // this.$store.commit("saveFirstName", this.myName);
     },
     addToCart(product) {
-      this.$store.commit("addProduct", product);
+      // this.$store.commit("addProduct", product);
+      this.ADD_PRODUCT(product);
     },
 
     showqtd(productId) {
-      return this.$store.state.cart.find((p) => p.id === productId)?.qtd || 0;
+      return this.cart.find((p) => p.id === productId)?.qtd || 0;
     },
   },
 
   computed: {
+    ...mapGetters(["fullName"]),
+    ...mapState({
+      user: (state) => state.user,
+      cart: (state) => state.cart,
+    }),
     firstName: {
       get() {
-        return this.$store.state.user.first_name;
+        return this.user.first_name;
       },
       set(value) {
-        this.$store.commit("saveFirstName", value);
+        this.SAVE_FIRST_NAME(value);
       },
     },
     lastName: {
       get() {
-        return this.$store.state.user.last_name;
+        return this.user.last_name;
       },
       set(value) {
-        this.$store.commit("saveLastName", value);
+        this.SAVE_LAST_NAME(value);
       },
     },
   },

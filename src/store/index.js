@@ -9,10 +9,14 @@ export default createStore({
     },
     cart: [],
   },
-  getters: {},
+  getters: {
+    fullName(state) {
+      return `${state.user.first_name} ${state.user.last_name}`;
+    },
+  },
   mutations: {
     // Cart
-    addProduct(state, payload) {
+    ADD_PRODUCT(state, payload) {
       const productIndex = state.cart.findIndex((c) => c.id === payload.id);
       if (productIndex === -1) {
         state.cart.push({ ...payload, qtd: 1 });
@@ -22,17 +26,17 @@ export default createStore({
     },
 
     // User
-    saveFirstName(state, payload) {
+    SAVE_FIRST_NAME(state, payload) {
       console.log(state, payload);
       state.user.first_name = payload;
     },
-    saveLastName(state, payload) {
+    SAVE_LAST_NAME(state, payload) {
       state.user.last_name = payload;
     },
   },
   actions: {
     saveFirstName(ctx, payload) {
-      ctx.commit("saveFirstName", payload);
+      ctx.commit("SAVE_FIRST_NAME", payload);
     },
   },
   modules: {},
